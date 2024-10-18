@@ -1,0 +1,46 @@
+
+services:
+  
+  metasploitable2:
+    image: tleemcjr/metasploitable2
+    container_name: metasploitable2
+    ports:
+      - "2222:22"
+      - "8080:80"
+      - "3306:3306"
+    restart: always
+
+  dvwa:
+    image: vulnerables/web-dvwa
+    container_name: dvwa
+    ports:
+      - "8081:80"
+    environment:
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_USER: "dvwa"
+      MYSQL_PASSWORD: "password"
+      MYSQL_DATABASE: "dvwa"
+    restart: always
+    volumes:
+      - ./data/dvwa:/var/lib/mysql
+
+  kali:
+    image: kali-custom
+    container_name: kali
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+    privileged: true  # Otorga permisos adicionales
+    volumes:
+      - ./data:/root/data  # Volumen para persistencia de datos
+
+  openvpn:
+    image: kylemanna/openvpn
+    container_name: openvpn
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - OVPN_SERVER=udp://0.0.0.0
+    ports:
+      - "1194:1194/udp"
+    restart: always
